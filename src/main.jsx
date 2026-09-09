@@ -44,7 +44,7 @@ function App() {
       const data = await res.json();
       if (!res.ok) {
         if (data.code === "MISSING_API_KEY") {
-          throw new Error("A conexão com a OpenAI ainda não está disponível nesta implantação. Faça um novo deploy depois de salvar a chave em Production.");
+          throw new Error("A conexão com o OpenRouter ainda não está disponível nesta implantação. Salve a chave OPENROUTER_API_KEY na Vercel e faça um novo deploy.");
         }
         throw new Error(data.error || "Não foi possível gerar as frases.");
       }
@@ -54,7 +54,7 @@ function App() {
       setPhrases(data.phrases);
     } catch (err) {
       const local = fallback[value.toLowerCase()];
-      if (local && !String(err.message).includes("OpenAI")) {
+      if (local && !String(err.message).includes("OpenRouter")) {
         setPhrases(local);
         setError("Modo demonstração: estas são frases de exemplo. A geração com IA encontrou um problema.");
       } else {
