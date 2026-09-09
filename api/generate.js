@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     const clean = String(structure || "").trim().slice(0, 80);
     if (!clean) return res.status(400).json({ code: "INVALID_INPUT", error: "Digite uma estrutura em inglês." });
 
-    const prompt = `You create practical English examples for a Brazilian learner who wants to build Anki cards.\n\nStructure to practice: "${clean}"\n\nGenerate EXACTLY 5 short, natural, useful English sentences that contain the given structure exactly or naturally in context.\nRules:\n- Prioritize real-life situations: work, travel, home, shopping, conversations, feelings, plans, daily routines.\n- Keep the sentences around A2-B2 unless the structure itself requires otherwise.\n- Avoid artificial textbook sentences, obscure vocabulary, duplicates, and overly regional slang.\n- Do not number the sentences.\n- Return ONLY valid JSON in this exact shape:\n{"phrases":["sentence 1","sentence 2","sentence 3","sentence 4","sentence 5"]}`;
+    const prompt = `You create practical English examples for a Brazilian learner who wants to build Anki cards.\n\nStructure to practice: "${clean}"\n\nGenerate EXACTLY 5 short, natural, useful English sentences that contain the given structure exactly or naturally in context, and provide a natural Brazilian Portuguese translation for each one.\nRules:\n- Prioritize real-life situations: work, travel, home, shopping, conversations, feelings, plans, daily routines.\n- Keep the sentences around A2-B2 unless the structure itself requires otherwise.\n- Translate meaning naturally into Brazilian Portuguese; do not make a word-for-word translation when it sounds unnatural.\n- Avoid artificial textbook sentences, obscure vocabulary, duplicates, and overly regional slang.\n- Do not number the sentences.\n- Return ONLY valid JSON in this exact shape:\n{"phrases":[{"en":"English sentence 1","pt":"Tradução em português 1"},{"en":"English sentence 2","pt":"Tradução em português 2"},{"en":"English sentence 3","pt":"Tradução em português 3"},{"en":"English sentence 4","pt":"Tradução em português 4"},{"en":"English sentence 5","pt":"Tradução em português 5"}]}`;
 
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: MODEL,
         input: prompt,
-        max_output_tokens: 500
+        max_output_tokens: 700
       })
     });
 
@@ -62,10 +62,13 @@ export default async function handler(req, res) {
 
     const parsed = JSON.parse(rawText);
     const phrases = Array.isArray(parsed.phrases)
-      ? parsed.phrases.map((p) => String(p).trim()).filter(Boolean).slice(0, 5)
+      ? parsed.phrases
+          .map((p) => ({ en: String(p?.en || "").trim(), pt: String(p?.pt || "").trim() }))
+          .filter((p) => p.en && p.pt)
+          .slice(0, 5)
       : [];
 
-    if (phrases.length !== 5) throw new Error("Invalid phrase count");
+    if (phrases.length !== 5) throw new Error("Invalid phrase count or translation");
 
     return res.status(200).json({ phrases });
   } catch (error) {
