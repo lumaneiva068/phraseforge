@@ -24,13 +24,23 @@ function App() {
     try {
       const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ structure: value }) });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Não foi possível gerar as frases.");
+      if (!res.ok) {
+        if (data.code === "MISSING_API_KEY") {
+          throw new Error("A conexão com a OpenAI ainda não está disponível nesta implantação. Faça um novo deploy depois de salvar a chave em Production.");
+        }
+        throw new Error(data.error || "Não foi possível gerar as frases.");
+      }
       if (!Array.isArray(data.phrases) || data.phrases.length !== 5) throw new Error("A resposta não trouxe 5 frases.");
       setPhrases(data.phrases);
     } catch (err) {
       const local = fallback[value.toLowerCase()];
-      if (local) { setPhrases(local); setError("Modo demonstração: conecte sua OPENAI_API_KEY para gerar novas estruturas."); }
-      else { setError(err.message || "Algo deu errado. Tente novamente."); setPhrases([]); }
+      if (local && !String(err.message).includes("OpenAI")) {
+        setPhrases(local);
+        setError("Modo demonstração: estas são frases de exemplo. A geração com IA encontrou um problema.");
+      } else {
+        setError(err.message || "Algo deu errado. Tente novamente.");
+        setPhrases([]);
+      }
     } finally { setLoading(false); }
   }
 
