@@ -18,3 +18,6 @@ Importe este repositório na Vercel e adicione nas Environment Variables:
 `OPENAI_MODEL` = modelo escolhido para sua conta (opcional; o código usa `gpt-5.6-luna` como padrão).
 
 Nunca coloque a chave da OpenAI no frontend.
+
+## Deploy fix
+A configuração do runtime do Vercel foi simplificada para permitir que o projeto use o runtime Node configurado no package.json.
