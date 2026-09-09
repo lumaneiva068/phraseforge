@@ -6,18 +6,25 @@ Gerador de frases naturais em inglês para Anki, com a identidade visual Explore
 - Página única responsiva.
 - Visual Explorer: verde floresta, creme/papel e terracota.
 - 5 frases por estrutura.
-- Copiar individual e copiar tudo.
+- Frente em inglês + verso em português.
+- Botão de copiar para cada lado e copiar tudo.
 - Backend serverless para manter a API key fora do navegador.
 - Configurado para Vercel + Node 24.
 
+## IA
+O PhraseForge usa a API compatível com OpenAI do OpenRouter e, por padrão, o roteador gratuito `openrouter/free`. O OpenRouter informa que esse roteador não cobra pelos tokens de entrada ou saída, embora existam limites e a disponibilidade dos modelos gratuitos possa variar.
+
 ## Deploy
-Importe este repositório na Vercel e adicione nas Environment Variables:
+Na Vercel, adicione nas Environment Variables:
 
-`OPENAI_API_KEY` = sua chave
+`OPENROUTER_API_KEY` = sua chave do OpenRouter
 
-`OPENAI_MODEL` = modelo escolhido para sua conta (opcional; o código usa `gpt-5.6-luna` como padrão).
+`OPENROUTER_MODEL` = `openrouter/free` (opcional; esse é o padrão)
 
-Nunca coloque a chave da OpenAI no frontend.
+Nunca coloque a chave do OpenRouter no frontend.
+
+## Segurança
+A chave fica somente no backend serverless da Vercel.
 
 ## Deploy fix
 A configuração do runtime do Vercel foi simplificada para permitir que o projeto use o runtime Node configurado no package.json.
