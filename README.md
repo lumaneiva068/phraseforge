@@ -21,3 +21,6 @@ Nunca coloque a chave da OpenAI no frontend.
 
 ## Deploy fix
 A configuração do runtime do Vercel foi simplificada para permitir que o projeto use o runtime Node configurado no package.json.
+
+## Trigger
+GitHub integration verified; latest commit is intended to trigger the Vercel deployment from main.
